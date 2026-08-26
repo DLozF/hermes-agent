@@ -4,10 +4,12 @@ services:
     container_name: hermes
     restart: unless-stopped
     volumes:
-      - ${USERPROFILE}/.hermes:/opt/data
+      - ../hermes_files/data:/opt/data
+      - ../hermes_files/ai_files:/opt/ai_files
     environment:
-      - HERMES_UID=10000
-      - HERMES_GID=10000
+      - HERMES_UID=1000
+      - HERMES_GID=1000
+      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
     command: ["gateway", "run"]
     networks:
       - backend
@@ -19,11 +21,13 @@ services:
     depends_on:
       - gateway
     volumes:
-      - ${USERPROFILE}/.hermes:/opt/data
+      - ../hermes_files/data:/opt/data
+      - ../hermes_files/ai_files:/opt/ai_files
     environment:
-      - HERMES_UID=10000
-      - HERMES_GID=10000
+      - HERMES_UID=1000
+      - HERMES_GID=1000
       - HERMES_DASHBOARD_HOST=127.0.0.1
+      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
     ports:
       - "127.0.0.1:9119:9119"
     networks:
@@ -32,5 +36,7 @@ services:
 
 networks:
   backend:
-    # external: true
-    name: ollama-firecrawl_backend
+    driver: bridge
+  # backend:
+  #   # external: true
+  #   name: ollama-firecrawl_backend
