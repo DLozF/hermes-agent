@@ -3,6 +3,8 @@ services:
     image: nousresearch/hermes-agent:latest
     container_name: hermes
     restart: unless-stopped
+    gpus: all
+
     volumes:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
@@ -18,6 +20,8 @@ services:
     image: nousresearch/hermes-agent:latest
     container_name: hermes-dashboard
     restart: unless-stopped
+    gpus: all
+  
     depends_on:
       - gateway
     volumes:
@@ -26,17 +30,15 @@ services:
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
-      - HERMES_DASHBOARD_HOST=127.0.0.1
+      - HERMES_DASHBOARD_HOST=0.0.0.0
+      - HERMES_DASHBOARD=1
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
     ports:
-      - "127.0.0.1:9119:9119"
+      - "9119:9119"
     networks:
       - backend
-    command: ["dashboard", "--host", "127.0.0.1", "--port", "9119", "--no-open"]
+    command: ["dashboard", "--host", "0.0.0.0", "--port", "9119", "--no-open"]
 
 networks:
   backend:
     driver: bridge
-  # backend:
-  #   # external: true
-  #   name: ollama-firecrawl_backend
