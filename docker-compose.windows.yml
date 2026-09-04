@@ -1,6 +1,9 @@
 services:
   gateway:
-    image: nousresearch/hermes-agent:latest
+    # image: nousresearch/hermes-agent:latest
+    build:
+      context: .
+      dockerfile: Dockerfile_hsep
     container_name: hermes
     restart: unless-stopped
     gpus: all
@@ -12,7 +15,7 @@ services:
       - HERMES_UID=1000
       - HERMES_GID=1000
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
-    command: ["gateway", "run"]
+    # command: ["gateway", "run"]
     networks:
       - backend
 

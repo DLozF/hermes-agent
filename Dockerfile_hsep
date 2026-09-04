@@ -1,0 +1,11 @@
+FROM nousresearch/hermes-agent:latest
+
+RUN uv pip install python-docx
+
+RUN hermes skills install official/research/research-paper-writing -y
+
+USER root
+
+RUN chown -R 1000:1000 /opt/hermes
+
+CMD ["gateway", "run"]
