@@ -4,6 +4,12 @@ RUN uv pip install python-docx
 
 RUN hermes skills install official/research/research-paper-writing -y
 
+RUN hermes doctor --fix
+
+RUN npm audit fix
+
+RUN hermes kanban init
+
 USER root
 
 RUN chown -R 1000:1000 /opt/hermes
