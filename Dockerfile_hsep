@@ -1,6 +1,6 @@
 FROM nousresearch/hermes-agent:latest
 
-RUN uv pip install python-docx
+RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
 
 RUN hermes skills install official/research/research-paper-writing -y
 
