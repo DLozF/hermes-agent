@@ -2,16 +2,31 @@ FROM nousresearch/hermes-agent:latest
 
 RUN uv pip install python-docx
 
+# Debian's /etc/profile resets PATH for root login shells (bash -lc as
+# root), dropping /opt/hermes/.venv/bin. A plain symlink into /usr/local/bin
+# doesn't fix it: CPython's venv (pyvenv.cfg) detection keys off the literal
+# invoked path's directory, not the symlink target, so `python` invoked as
+# /usr/local/bin/python silently falls back to the system interpreter and
+# misses the venv's site-packages. Re-prepend the real venv bin dir onto
+# PATH via /etc/profile.d so login shells resolve `python` to the actual
+# /opt/hermes/.venv/bin/python path.
+RUN printf 'export PATH="/opt/hermes/.venv/bin:$PATH"\n' > /etc/profile.d/00-hermes-venv.sh && \
+    chmod +x /etc/profile.d/00-hermes-venv.sh
+
 RUN hermes skills install official/research/research-paper-writing -y
 
 RUN hermes doctor --fix
 
-RUN npm audit fix
+# RUN npm audit fix
 
 RUN hermes kanban init
 
 USER root
 
 RUN chown -R 1000:1000 /opt/hermes
+
+ENV VIRTUAL_ENV=/opt/hermes/.venv
+
+ENV PATH=/opt/hermes/.venv/bin:${PATH}
 
 CMD ["gateway", "run"]
