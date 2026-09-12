@@ -1,6 +1,6 @@
 FROM nousresearch/hermes-agent:latest
 
-RUN uv pip install python-docx
+RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
 
 # Debian's /etc/profile resets PATH for root login shells (bash -lc as
 # root), dropping /opt/hermes/.venv/bin. A plain symlink into /usr/local/bin

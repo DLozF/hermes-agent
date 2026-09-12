@@ -1,6 +1,5 @@
 services:
   gateway:
-    # image: nousresearch/hermes-agent:latest
     build:
       context: .
       dockerfile: Dockerfile_hsep
@@ -22,11 +21,13 @@ services:
       - backend
 
   dashboard:
-    image: nousresearch/hermes-agent:latest
+    build:
+      context: .
+      dockerfile: Dockerfile_hsep
     container_name: hermes-dashboard
     restart: unless-stopped
     gpus: all
-  
+
     depends_on:
       - gateway
     volumes:
@@ -43,6 +44,7 @@ services:
     networks:
       - backend
     command: ["dashboard", "--host", "0.0.0.0", "--port", "9119", "--no-open"]
+
 
 networks:
   backend:
