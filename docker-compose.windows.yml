@@ -13,7 +13,7 @@ services:
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
-      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
+      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
       - VIRTUAL_ENV=/opt/hermes/.venv
       # - PATH=/opt/hermes/.venv/bin:$PATH
     # command: ["gateway", "run"]
@@ -38,7 +38,7 @@ services:
       - HERMES_GID=1000
       - HERMES_DASHBOARD_HOST=0.0.0.0
       - HERMES_DASHBOARD=1
-      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files
+      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
     ports:
       - "9119:9119"
     networks:
