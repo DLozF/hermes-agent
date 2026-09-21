@@ -12,6 +12,8 @@ import json
 import logging
 import os
 import time
+import urllib.error
+import urllib.request
 from contextlib import contextmanager
 from typing import Any, Callable, Optional
 
@@ -100,6 +102,79 @@ def _check_kanban_mode() -> bool:
 def _check_kanban_orchestrator_mode() -> bool:
     """Board-routing tools (kanban_list, kanban_unblock): hidden from task workers."""
     return _visible(to_env_worker=False)
+
+
+LIGHTRAG_URL = "http://local-hermes-lightrag-1:9621"
+
+
+def _lightrag_completion_gate(task, artifacts: list[str]) -> tuple[bool, str]:
+    """Verify that a LightRAG task's document has finished processing."""
+    if not task or "lightrag" not in (task.skills or []):
+        return True, ""
+
+    if not artifacts:
+        return False, (
+            "LightRAG completion rejected: no PDF artifact was provided. "
+            "Provide the ingested PDF path in artifacts and retry."
+        )
+
+    filenames = {os.path.basename(path) for path in artifacts if path}
+    if not filenames:
+        return False, (
+            "LightRAG completion rejected: the artifact list contains no "
+            "usable filename."
+        )
+
+    url = f"{LIGHTRAG_URL}/documents/paginated"
+    payload = json.dumps({
+        "page": 1,
+        "page_size": 200,
+        "sort_field": "created_at",
+        "sort_direction": "desc",
+    }).encode("utf-8")
+
+    request = urllib.request.Request(
+        url,
+        data=payload,
+        method="POST",
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except (urllib.error.HTTPError, urllib.error.URLError, json.JSONDecodeError) as error:
+        return False, f"LightRAG completion rejected: could not verify document status ({error})."
+
+    documents = data.get("documents", [])
+    matches = [
+        document for document in documents
+        if os.path.basename(document.get("file_path", "")) in filenames
+    ]
+
+    if not matches:
+        return False, (
+            "LightRAG completion rejected: the PDF artifact was not found "
+            "in the LightRAG document list."
+        )
+
+    for document in matches:
+        status = str(document.get("status", "")).lower()
+        if status == "processed":
+            return True, ""
+
+    statuses = ", ".join(
+        f"{document.get('file_path', '<unknown>')}: "
+        f"{document.get('status', '<unknown>')}"
+        for document in matches
+    )
+    return False, (
+        "LightRAG completion rejected: document processing is not finished. "
+        f"Current status: {statuses}. Retry after LightRAG reports processed."
+    )
 
 
 # --- Shared helpers: validation failures raise _Reject; _kanban_handler renders it ---
@@ -746,6 +821,12 @@ def _handle_complete(args: dict, **kw) -> str:
         # actually reachable — see _goal_judge_available for why an unavailable judge fails open.
         task = kb.get_task(conn, tid)
         _goal_gate("kanban_complete", task, tid, (summary or result or "").strip())
+
+        lightrag_ok, lightrag_reason = _lightrag_completion_gate(
+            task, artifacts or []
+        )
+        _check(lightrag_ok, lightrag_reason)
+
         try:
             ok = kb.complete_task(
                 conn, tid, result=result, summary=summary, metadata=metadata,
