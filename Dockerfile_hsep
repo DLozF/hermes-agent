@@ -15,7 +15,7 @@ RUN printf 'export PATH="/opt/hermes/.venv/bin:$PATH"\n' > /etc/profile.d/00-her
 
 RUN hermes skills install official/research/research-paper-writing -y
 
-RUN hermes doctor --fix
+# RUN hermes doctor --fix
 
 # RUN npm audit fix
 
