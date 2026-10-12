@@ -6,39 +6,23 @@ services:
     container_name: hermes
     restart: unless-stopped
     gpus: all
-
     volumes:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
-
-      # WSLg X11 socket
       - /tmp/.X11-unix:/tmp/.X11-unix
-
-      # WSLg user D-Bus session
       - /run/user/1000/bus:/run/user/1000/bus
-
-      # WSLg AT-SPI accessibility bus
       - /run/user/1000/at-spi:/run/user/1000/at-spi
-
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
       - VIRTUAL_ENV=/opt/hermes/.venv
-
-      # WSLg display
       - DISPLAY=:0
-
-      # WSLg user session D-Bus
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-
-      # Hermes gateway API
       - API_SERVER_ENABLED=true
       - API_SERVER_HOST=0.0.0.0
-
     ports:
       - "8642:8642"
-
     networks:
       - backend
 
@@ -49,27 +33,26 @@ services:
     container_name: hermes-dashboard
     restart: unless-stopped
     gpus: all
-
     depends_on:
       - gateway
-
     volumes:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
-
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /run/user/1000/bus:/run/user/1000/bus
+      - /run/user/1000/at-spi:/run/user/1000/at-spi
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
       - HERMES_DASHBOARD_HOST=0.0.0.0
       - HERMES_DASHBOARD=1
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
-
+      - DISPLAY=:0
+      - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
     ports:
       - "9119:9119"
-
     networks:
       - backend
-
     command:
       [
         "dashboard",
