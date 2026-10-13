@@ -9,15 +9,13 @@ services:
     volumes:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/1000/bus:/run/user/1000/bus
-      - /run/user/1000/at-spi:/run/user/1000/at-spi
+      - browser_gui_runtime:/run/user/1000
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
       - VIRTUAL_ENV=/opt/hermes/.venv
-      - DISPLAY=:0
+      - DISPLAY=browser-gui:99
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
       - API_SERVER_ENABLED=true
       - API_SERVER_HOST=0.0.0.0
@@ -39,16 +37,15 @@ services:
     volumes:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /run/user/1000/bus:/run/user/1000/bus
-      - /run/user/1000/at-spi:/run/user/1000/at-spi
+      - browser_gui_runtime:/run/user/1000
+
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
       - HERMES_DASHBOARD_HOST=0.0.0.0
       - HERMES_DASHBOARD=1
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
-      - DISPLAY=:0
+      - DISPLAY=browser-gui:99
       - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
     ports:
       - "9119:9119"
@@ -67,3 +64,8 @@ services:
 networks:
   backend:
     driver: bridge
+
+volumes:
+  browser_gui_runtime:
+    external: true
+    name: local-hermes_browser_gui_runtime
