@@ -1,6 +1,6 @@
-FROM nousresearch/hermes-agent:latest
+FROM nousresearch/hermes-agent:latest-desktop
 
-RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
+# RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
 
 # Debian's /etc/profile resets PATH for root login shells (bash -lc as
 # root), dropping /opt/hermes/.venv/bin. A plain symlink into /usr/local/bin
@@ -15,13 +15,21 @@ RUN printf 'export PATH="/opt/hermes/.venv/bin:$PATH"\n' > /etc/profile.d/00-her
 
 RUN hermes skills install official/research/research-paper-writing -y
 
+
+
 # RUN hermes doctor --fix
 
 # RUN npm audit fix
 
 RUN hermes kanban init
 
+RUN hermes computer-use install
+
+
+
 USER root
+
+
 
 RUN chown -R 1000:1000 /opt/hermes
 
