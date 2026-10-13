@@ -1,4 +1,4 @@
-FROM nousresearch/hermes-agent:latest
+FROM nousresearch/hermes-agent:latest-desktop
 
 # Computer-use / WSLg accessibility dependencies
 RUN apt-get update && \
@@ -7,7 +7,7 @@ RUN apt-get update && \
         dbus-x11 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
+#RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
 
 # Debian's /etc/profile resets PATH for root login shells (bash -lc as
 # root), dropping /opt/hermes/.venv/bin. A plain symlink into /usr/local/bin
@@ -34,6 +34,8 @@ RUN chown -R 1000:1000 /opt/hermes
 
 ENV VIRTUAL_ENV=/opt/hermes/.venv
 ENV PATH=/opt/hermes/.venv/bin:${PATH}
+
+
 
 
 CMD ["gateway", "run"]
