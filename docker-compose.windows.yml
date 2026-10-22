@@ -53,15 +53,15 @@ services:
       - "9119:9119"
     networks:
       - backend
-    command:
-      [
-        "dashboard",
-        "--host",
-        "0.0.0.0",
-        "--port",
-        "9119",
-        "--no-open"
-      ]
+    command: ["sleep", "infinity"]
+      # [
+      #   "dashboard",
+      #   "--host",
+      #   "0.0.0.0",
+      #   "--port",
+      #   "9119",
+      #   "--no-open"
+      # ]
 
 networks:
   backend:
