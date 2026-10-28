@@ -21,8 +21,7 @@ services:
       - API_SERVER_HOST=0.0.0.0
     ports:
       - "8642:8642"
-    # command: ["gateway", "run"]
-    command: ["/bin/sh", "-c", "hermes computer-use screen start && exec hermes gateway run"]
+    command: ["gateway", "run"]
     networks:
       - backend
     shm_size: "4gb"
@@ -40,7 +39,6 @@ services:
       - ../hermes_files/data:/opt/data
       - ../hermes_files/ai_files:/opt/ai_files
       - browser_gui_runtime:/run/user/1000
-
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
