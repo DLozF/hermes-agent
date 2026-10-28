@@ -13,6 +13,8 @@ services:
     environment:
       - HERMES_UID=1000
       - HERMES_GID=1000
+      - HERMES_DASHBOARD=1
+      - HERMES_DASHBOARD_HOST=0.0.0.0
       - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
       - VIRTUAL_ENV=/opt/hermes/.venv
       - DISPLAY=browser-gui:99
@@ -21,6 +23,7 @@ services:
       - API_SERVER_HOST=0.0.0.0
     ports:
       - "8642:8642"
+      - "9119:9119"
     command: ["gateway", "run"]
     networks:
       - backend
