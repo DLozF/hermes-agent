@@ -29,33 +29,6 @@ services:
       - backend
     shm_size: "4gb"
 
-  dashboard:
-    build:
-      context: .
-      dockerfile: Dockerfile_hsep
-    container_name: hermes-dashboard
-    restart: unless-stopped
-    gpus: all
-    depends_on:
-      - gateway
-    volumes:
-      - ../hermes_files/data:/opt/data
-      - ../hermes_files/ai_files:/opt/ai_files
-      - browser_gui_runtime:/run/user/1000
-    environment:
-      - HERMES_UID=1000
-      - HERMES_GID=1000
-      - HERMES_DASHBOARD_HOST=0.0.0.0
-      - HERMES_DASHBOARD=1
-      - HERMES_WRITE_SAFE_ROOT=/opt/ai_files:/opt/data
-      - DISPLAY=browser-gui:99
-      - DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus
-    ports:
-      - "9119:9119"
-    networks:
-      - backend
-    command: ["sleep", "infinity"]
-
 networks:
   backend:
     driver: bridge
