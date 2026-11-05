@@ -13,7 +13,8 @@ RUN apt-get update && \
         xfce4-settings \
         xauth \
         x11-utils \
-        xdotool && \
+        xdotool \
+        tesseract-ocr && \
     rm -rf /var/lib/apt/lists/*
 
 #RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
