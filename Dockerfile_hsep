@@ -12,7 +12,8 @@ RUN apt-get update && \
         xfdesktop4 \
         xfce4-settings \
         xauth \
-        x11-utils && \
+        x11-utils \
+        xdotool && \
     rm -rf /var/lib/apt/lists/*
 
 #RUN uv pip install --python /usr/bin/python3 --break-system-packages python-docx
