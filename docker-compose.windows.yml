@@ -35,5 +35,4 @@ networks:
 
 volumes:
   browser_gui_runtime:
-    external: true
-    name: local-hermes_browser_gui_runtime
+    # name: local-hermes_browser_gui_runtime
